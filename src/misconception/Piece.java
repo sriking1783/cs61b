@@ -12,10 +12,10 @@ import misconception.Board;
  * @author sastaputhra
  */
 class Piece {
-    private final int x;
-    private final int y;
-    private final boolean isFire;
-    private final String shield;
+    private  int x;
+    private  int y;
+    private  boolean isFire;
+    private  String shield;
 
     Piece(boolean isFire, Board b, int x, int y, String shield) {
         this.isFire = isFire;
@@ -47,7 +47,8 @@ class Piece {
             return 1;
     }
     void move(int x, int y) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.x = x;
+        this.y = y;
     }
     
     boolean hasCaptured(){

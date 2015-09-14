@@ -143,8 +143,7 @@ class Board {
     }
 
     void place(Piece shield, int x, int y) {
-        //shield.x = x;
-        //shield.y = y;
+        shield.move(x, y);
     }
 
     boolean canSelect(int x, int y) {
@@ -156,7 +155,9 @@ class Board {
     }
 
     void select(int x, int y) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if(canSelect(x, y)){
+            
+        }
     }
 
     boolean canEndTurn() {
