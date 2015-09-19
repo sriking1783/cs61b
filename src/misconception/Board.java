@@ -5,6 +5,7 @@
  */
 package misconception;
 import draw.StdDrawPlus;
+import java.util.ArrayList;
 import misconception.Piece;
 
 /**
@@ -14,6 +15,7 @@ import misconception.Piece;
 class Board {
     
     private static Piece[][] board;
+    //ArrayList<Integer> pieces = new ArrayList<>();
     private static Piece[][] pieces;
     private static Piece []fireshield;
     private static Piece []watershield;
@@ -24,10 +26,31 @@ class Board {
     private static Piece []firepawn;
     private static Piece []waterpawn;
     
-    private void initialize_pieces() {
+    private class Player{
+        String name;
+        int x;
+        int y;
+        boolean turn;
+        boolean has_moved;
+        Player(String name, int x, int y, boolean turn){
+            this.name = name;
+            this.x = x;
+            this.y = y;
+            this.turn = turn;
+            this.has_moved = false;
+        }
+        
+        
+    }
+    
+    Player water, fire;
+    
+    private void initialize_pieces() {   
         int i = 0;
         int j = 0;
-        for(Piece piece: firepawn){
+        water = new Player("water", -1, -1, false);
+        fire = new Player("fire", -1, -1, true);
+        /*for(Piece piece: firepawn){
             //piece= new  Piece(true, this, i, j, "pawn");
             board[i][j] = new  Piece(true, this, i, j, "pawn");
             i += 2;
@@ -69,9 +92,8 @@ class Board {
             //piece= new  Piece(false, this, i, j, "bomb");
             board[i][j] = new  Piece(false, this, i, j, "bomb");
             i +=2;
-        }
-        
-        pieces = new Piece[][] { firepawn,fireshield,firebomb,waterpawn,watershield,waterbomb };
+        }*/
+        pieces = new Piece[8][8];
     }
     
     private static void drawBoard(int N) {
@@ -107,9 +129,7 @@ class Board {
                 }
             }
         }
-        for(Piece[] piece_array : pieces){
-            
-        }
+        
         
     }
 
@@ -130,7 +150,7 @@ class Board {
         
         initialize_pieces();
         
-        while(shouldBeEmpty){
+        while(!shouldBeEmpty){
             drawBoard(N);
         }
         
@@ -143,11 +163,21 @@ class Board {
     }
 
     void place(Piece shield, int x, int y) {
-        shield.move(x, y);
+        if(x > 8 || y > 8)
+            return ;
+        pieces[x][y] = shield;
     }
 
     boolean canSelect(int x, int y) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Piece piece = pieceAt(x, y);
+        if(x > 8 || y > 8)
+            return false;
+        if(piece != null){
+            if(canFireSelect(piece) || canWaterSelect(piece)){
+                return true;
+            }                
+        }
+        return true;
     }
     
     Piece remove(int x, int y) {
@@ -155,13 +185,24 @@ class Board {
     }
 
     void select(int x, int y) {
+        Player player = current_turn();
         if(canSelect(x, y)){
-            
+            if(player.x != x && player.y !=y){
+                player.x = x;
+                player.y = y;
+                player.has_moved = true;
+            }
+            else{
+                player.has_moved = false;
+            }
         }
     }
 
     boolean canEndTurn() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Player player = current_turn();
+        if (player.has_moved)
+            return true;
+        return false;
     }
     
     void endTurn() {
@@ -170,6 +211,48 @@ class Board {
     
     String winner() {
         return "Fire";
+    }
+    
+    private boolean canFireSelect(Piece piece)
+    {
+        if(fire.turn)
+        {
+            if(piece == null){
+                return true;
+            }
+            else if(piece.isFire()){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        else
+            return false;
+    }
+      
+    private boolean canWaterSelect(Piece piece)
+    {
+        if(water.turn)
+        {
+            if(piece == null)
+                return true;
+            else if(!piece.isFire()){
+                return true;
+            }
+            else
+                return false;
+        }
+        else
+            return false;
+    } 
+    
+    private Player current_turn()
+    {
+        if(water.turn)
+            return water;
+        else
+            return fire;
     }
 
     
