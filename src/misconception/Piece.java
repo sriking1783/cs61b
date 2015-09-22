@@ -12,10 +12,10 @@ import misconception.Board;
  * @author sastaputhra
  */
 class Piece {
-    private  int x;
-    private  int y;
-    private  boolean isFire;
-    private  String shield;
+    int x;
+    int y;
+    boolean isFire;
+    String shield;
 
     Piece(boolean isFire, Board b, int x, int y, String shield) {
         this.isFire = isFire;

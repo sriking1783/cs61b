@@ -5,6 +5,7 @@
  */
 package misconception;
 import draw.StdDrawPlus;
+import java.awt.Point;
 import java.util.ArrayList;
 import misconception.Piece;
 
@@ -32,6 +33,8 @@ class Board {
         int y;
         boolean turn;
         boolean has_moved;
+        Point can_select;
+        Piece piece;
         Player(String name, int x, int y, boolean turn){
             this.name = name;
             this.x = x;
@@ -165,17 +168,40 @@ class Board {
     void place(Piece shield, int x, int y) {
         if(x > 8 || y > 8)
             return ;
+        
+        Player player = current_turn();
+        Piece piece = pieceAt(x,y);
+        if((piece != null) && (piece.x != x && piece.y != y )){
+            shield.move(x, y);
+        }
+        else if(player.piece == null){
+            player.piece = shield;
+            player.x = x;
+            player.y = y;
+        }
+         else if(player.piece == shield){
+            shield.move(x, y);
+            player.x = x;
+            player.y = y;
+            player.has_moved = true;
+        }
+        
         pieces[x][y] = shield;
     }
 
     boolean canSelect(int x, int y) {
         Piece piece = pieceAt(x, y);
+        Player player = current_turn();
+        
         if(x > 8 || y > 8)
             return false;
-        if(piece != null){
-            if(canFireSelect(piece) || canWaterSelect(piece)){
-                return true;
-            }                
+        if(player.piece == null){
+            if(piece != null){
+                if(canFireSelect(piece) || canWaterSelect(piece)){
+                   player.can_select = new Point(x, y);
+                    return true;
+                }                
+            }
         }
         return true;
     }
@@ -187,13 +213,24 @@ class Board {
     void select(int x, int y) {
         Player player = current_turn();
         if(canSelect(x, y)){
-            if(player.x != x && player.y !=y){
+            if((player.x == -1 && player.y == -1)||(player.piece == null)){
                 player.x = x;
                 player.y = y;
-                player.has_moved = true;
+                player.piece = pieceAt(x, y);
+            }
+
+            else if(player.x != x && player.y !=y){
+                player.x = x;
+                player.y = y;
+                if(player.piece !=null){
+                    place(player.piece, x, y);
+                }
+                else{
+                    player.piece = pieceAt(x, y);
+                }
+                    
             }
             else{
-                player.has_moved = false;
             }
         }
     }
@@ -206,7 +243,15 @@ class Board {
     }
     
     void endTurn() {
+        Player player = current_turn();
+        player.has_moved = false;
+        player.piece = null;
+        player.turn=false;
         
+        Player other_player = other_turn();
+        other_player.has_moved = false;
+        other_player.turn=true;
+        player.can_select = null;
     }
     
     String winner() {
@@ -250,6 +295,14 @@ class Board {
     private Player current_turn()
     {
         if(water.turn)
+            return water;
+        else
+            return fire;
+    }
+
+    private Player other_turn()
+    {
+        if(fire.turn)
             return water;
         else
             return fire;
