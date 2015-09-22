@@ -33,7 +33,6 @@ class Board {
         int y;
         boolean turn;
         boolean has_moved;
-        Point can_select;
         Piece piece;
         Player(String name, int x, int y, boolean turn){
             this.name = name;
@@ -53,49 +52,7 @@ class Board {
         int j = 0;
         water = new Player("water", -1, -1, false);
         fire = new Player("fire", -1, -1, true);
-        /*for(Piece piece: firepawn){
-            //piece= new  Piece(true, this, i, j, "pawn");
-            board[i][j] = new  Piece(true, this, i, j, "pawn");
-            i += 2;
-        }
-        i = 1;
-        j = 1;
-        for(Piece piece: fireshield){
-            //piece= new  Piece(true, this, i, j, "shield");
-            board[i][j] = new  Piece(true, this, i, j, "shield");
-            i += 2;
-        }
         
-        i = 0;
-        j = 2;
-        for(Piece piece: firebomb){
-            //piece= new  Piece(true, this, i, j, "bomb");
-            board[i][j] = new  Piece(true, this, i, j, "bomb");
-            i +=2;
-        }
-        
-        i = 1;
-        j = 7;
-        for(Piece piece: waterpawn){
-            //piece= new  Piece(false, this, i, j, "pawn");
-            board[i][j] = new  Piece(false, this, i, j, "pawn");;
-            i += 2;
-        }
-        i = 0;
-        j = 6;
-        for(Piece piece: watershield){
-            //piece= new  Piece(false, this, i, j, "shield");
-            board[i][j] = new  Piece(false, this, i, j, "shield");;
-            i += 2;
-        }
-        
-        i = 1;
-        j = 5;
-        for(Piece piece: waterbomb){
-            //piece= new  Piece(false, this, i, j, "bomb");
-            board[i][j] = new  Piece(false, this, i, j, "bomb");
-            i +=2;
-        }*/
         pieces = new Piece[8][8];
     }
     
@@ -198,7 +155,6 @@ class Board {
         if(player.piece == null){
             if(piece != null){
                 if(canFireSelect(piece) || canWaterSelect(piece)){
-                   player.can_select = new Point(x, y);
                     return true;
                 }                
             }
@@ -212,7 +168,6 @@ class Board {
 
     void select(int x, int y) {
         Player player = current_turn();
-        if(canSelect(x, y)){
             if((player.x == -1 && player.y == -1)||(player.piece == null)){
                 player.x = x;
                 player.y = y;
@@ -227,12 +182,12 @@ class Board {
                 }
                 else{
                     player.piece = pieceAt(x, y);
+                    player.has_moved = true;
                 }
                     
             }
-            else{
-            }
-        }
+        
+        //player.can_select = null;
     }
 
     boolean canEndTurn() {
@@ -246,12 +201,13 @@ class Board {
         Player player = current_turn();
         player.has_moved = false;
         player.piece = null;
+        player.x = -1;
+        player.y = -1;
         player.turn=false;
         
         Player other_player = other_turn();
         other_player.has_moved = false;
         other_player.turn=true;
-        player.can_select = null;
     }
     
     String winner() {
