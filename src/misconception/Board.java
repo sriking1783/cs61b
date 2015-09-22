@@ -133,8 +133,6 @@ class Board {
         }
         else if(player.piece == null){
             player.piece = shield;
-            player.x = x;
-            player.y = y;
         }
          else if(player.piece == shield){
             shield.move(x, y);
