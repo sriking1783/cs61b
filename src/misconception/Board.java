@@ -128,13 +128,17 @@ class Board {
         
         Player player = current_turn();
         Piece piece = pieceAt(x,y);
+
         if((piece != null) && (piece.x != x && piece.y != y )){
+            System.out.println("Called place if");
             shield.move(x, y);
         }
         else if(player.piece == null){
-            player.piece = shield;
+            System.out.println("Called place else if 1");
+            //player.piece = shield;
         }
          else if(player.piece == shield){
+            System.out.println("Called place else if 2");
             shield.move(x, y);
             player.x = x;
             player.y = y;
@@ -166,23 +170,31 @@ class Board {
 
     void select(int x, int y) {
         Player player = current_turn();
+          System.out.println(player.x+", "+player.y+", "+x+", "+y+", "+player.piece+", "+player.has_moved);
             if((player.x == -1 && player.y == -1)||(player.piece == null)){
                 player.x = x;
                 player.y = y;
                 player.piece = pieceAt(x, y);
+                
             }
 
             else if(player.x != x && player.y !=y){
                 player.x = x;
                 player.y = y;
+                System.out.println("CALLED BEFORE PLACE");
                 if(player.piece !=null){
+                    System.out.println("CALLED PLACE");
                     place(player.piece, x, y);
+                    player.has_moved = true;
                 }
                 else{
                     player.piece = pieceAt(x, y);
-                    player.has_moved = true;
+                    
                 }
                     
+            }
+            else{
+                
             }
         
         //player.can_select = null;
