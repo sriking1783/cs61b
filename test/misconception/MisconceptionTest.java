@@ -80,17 +80,36 @@ public class MisconceptionTest {
     public void testThatSelectCallsMove() {
         System.out.println("Test 3: See comments in MisconceptionTests.java for description.");
 
+        Board b1 = new Board(true);
+
+        // Place a shield at position 0, 0.
+        SpyPiece sshield = new SpyPiece(true, b1, 0, 0, "shield");
+        sshield.moveCount= 0;
+        b1.place(sshield, 0, 0);
+        
+        
+        b1.select(0, 0);
+        assertEquals(0, sshield.moveCount);
+       
+        b1.select(1, 1); 
+        assertEquals(1, sshield.moveCount);
+    }
+    
+    @Test
+    public void testThatSelectWINNER() {
+        System.out.println("Test 4: See comments in MisconceptionTests.java for description.");
         Board b = new Board(true);
 
         // Place a shield at position 0, 0.
-        SpyPiece shield = new SpyPiece(true, b, 0, 0, "shield");
+        Piece shield = new Piece(false, b, 0, 0, "shield");
         b.place(shield, 0, 0);
         
-
-        b.select(0, 0);
-        assertEquals(0, shield.moveCount);
-        b.select(1, 1); 
-        assertEquals(1, shield.moveCount);
+        assertEquals("Water", b.winner());
+        
+        Piece shield1 = new Piece(true, b, 1, 0, "shield");
+        b.place(shield1, 1, 0);
+        
+        assertEquals(null, b.winner());
     }
 
 

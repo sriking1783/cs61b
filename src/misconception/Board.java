@@ -16,6 +16,8 @@ import misconception.Piece;
 class Board {
     
     private static Piece[][] board;
+    private static Piece[] board_piece;
+    private static int board_length;
     //ArrayList<Integer> pieces = new ArrayList<>();
     private static Piece[][] pieces;
     private static Piece []fireshield;
@@ -54,6 +56,7 @@ class Board {
         fire = new Player("fire", -1, -1, true);
         
         pieces = new Piece[8][8];
+        
     }
     
     private static void drawBoard(int N) {
@@ -107,9 +110,9 @@ class Board {
         waterpawn = new Piece[4];
         
         board = new Piece[8][8];
-        
+        board_piece = new Piece[24];
         initialize_pieces();
-        
+        board_length = 0;
         while(!shouldBeEmpty){
             drawBoard(N);
         }
@@ -128,17 +131,16 @@ class Board {
         
         Player player = current_turn();
         Piece piece = pieceAt(x,y);
-
+        
         if((piece != null) && (piece.x != x && piece.y != y )){
-            System.out.println("Called place if");
             shield.move(x, y);
+            board_piece[board_length++] =  shield;
         }
         else if(player.piece == null){
-            System.out.println("Called place else if 1");
+            board_piece[board_length++] =  shield;
             //player.piece = shield;
         }
          else if(player.piece == shield){
-            System.out.println("Called place else if 2");
             shield.move(x, y);
             player.x = x;
             player.y = y;
@@ -170,7 +172,6 @@ class Board {
 
     void select(int x, int y) {
         Player player = current_turn();
-          System.out.println(player.x+", "+player.y+", "+x+", "+y+", "+player.piece+", "+player.has_moved);
             if((player.x == -1 && player.y == -1)||(player.piece == null)){
                 player.x = x;
                 player.y = y;
@@ -181,9 +182,7 @@ class Board {
             else if(player.x != x && player.y !=y){
                 player.x = x;
                 player.y = y;
-                System.out.println("CALLED BEFORE PLACE");
                 if(player.piece !=null){
-                    System.out.println("CALLED PLACE");
                     place(player.piece, x, y);
                     player.has_moved = true;
                 }
@@ -221,7 +220,19 @@ class Board {
     }
     
     String winner() {
-        return "Fire";
+        int num_fire_pieces = count_fire_pieces();
+        int num_water_pieces = count_water_pieces();
+        System.out.println(num_fire_pieces+", "+num_water_pieces);
+        if((num_water_pieces == 0)&&(num_fire_pieces > 0))
+            return "Fire";
+        if((num_fire_pieces == 0)&&(num_water_pieces > 0))
+            return "Water";
+         if((num_fire_pieces > 0)&&(num_water_pieces > 0))
+            return null;
+         if((num_fire_pieces == 0)&&(num_water_pieces == 0))
+            return "None";
+         else 
+             return "None";
     }
     
     private boolean canFireSelect(Piece piece)
@@ -274,6 +285,23 @@ class Board {
             return fire;
     }
 
+    private int count_fire_pieces(){
+        int count = 0;
+        for(Piece piece : board_piece){
+            if((piece != null)&&(piece.isFire))
+                count++;
+        }
+        return count;
+    }
+    
+     private int count_water_pieces(){
+        int count = 0;
+        for(Piece piece : board_piece){
+            if((piece != null)&&(!piece.isFire))
+                count++;
+        }
+        return count;
+    }
     
     
 }
